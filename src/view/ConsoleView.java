@@ -40,7 +40,8 @@ public class ConsoleView {
         System.out.println("2. READ");
         System.out.println("3. UPDATE");
         System.out.println("4. DELETE");
-        System.out.println("5. ZURUCK");
+        System.out.println("5. PRODUKTE NACH KUNDE");
+        System.out.println("6. ZURUCK");
 
         Scanner scanner = new Scanner(System.in);
 
@@ -55,6 +56,8 @@ public class ConsoleView {
         else if (input == 4)
             RemoveProduktPage();
         else if (input == 5)
+            ProdukteNachKundePage();
+        else if (input == 6)
             MainPage();
 
 
@@ -77,7 +80,7 @@ public class ConsoleView {
         scanner.reset();
 
         System.out.println("JAHRESZEIT: 1. WINTER 2. FRUHLING 3. SOMMER 4. HERBST: ");
-        Integer jahreszeit = Integer.parseInt(scanner.nextLine());
+        Integer jahreszeit = Integer.parseInt(scanner.nextLine()) - 1;
 
         boolean output = controller.createProdukt(name, preis, jahreszeit);
 
@@ -166,8 +169,7 @@ public class ConsoleView {
             ProduktePage();
     }
 
-    void UpdateProduktPage()
-    {
+    void UpdateProduktPage() {
         // refolosim mult cod de la read produkt
         System.out.println("\n\n\n\n");
         System.out.println("UPDATE PRODUKT");
@@ -220,12 +222,12 @@ public class ConsoleView {
         Integer jahreszeit;
         Float preis;
 
-        if(!newPreis.isEmpty())
+        if (!newPreis.isEmpty())
             preis = Float.parseFloat(newPreis);
         else
             preis = produkt.getPreis();
 
-        if(!newJahreszeit.isEmpty())
+        if (!newJahreszeit.isEmpty())
             jahreszeit = Integer.parseInt(newJahreszeit);
         else
             jahreszeit = produkt.getJahreszeit();
@@ -233,7 +235,7 @@ public class ConsoleView {
         boolean output = controller.updateProdukt(produkt, newName, jahreszeit, preis);
 
         String outputString = "";
-        if(output == true)
+        if (output == true)
             outputString = "PRODUKT ERFOLGREICH AKTUALISIERT!";
         else
             outputString = "MAN KONNTE DEN PRODUKT NICHT AKTUALISIEREN.";
@@ -249,8 +251,7 @@ public class ConsoleView {
             ProduktePage();
     }
 
-    void RemoveProduktPage()
-    {
+    void RemoveProduktPage() {
         System.out.println("\n\n\n\n");
         System.out.println("PRODUKT LOSCHEN");
         System.out.println("");
@@ -264,7 +265,7 @@ public class ConsoleView {
         boolean output = controller.removeProdukt(name);
 
         String outputString = "";
-        if(output == true)
+        if (output == true)
             outputString = "PRODUKT ERFOLGREICH GELOSCHT!";
         else
             outputString = "MAN KONNTE DEN PRODUKT NICHT LOSCHEN.";
@@ -283,6 +284,64 @@ public class ConsoleView {
             RemoveProduktPage();
     }
 
+    void ProdukteNachKundePage()
+    {
+        System.out.println("\n\n\n\n");
+        System.out.println("PRODUKTE NACH KUNDE");
+        System.out.println("");
+        System.out.println("");
+        System.out.println("KUNDE ID: ");
+
+        Scanner scanner = new Scanner(System.in);
+
+        Integer id = Integer.parseInt( scanner.nextLine() );
+
+        System.out.println("1. STEIGENDER REIHENFOLGE");
+        System.out.println("2. FALLENDER REIHENFOLGE");
+
+        scanner.reset();
+        boolean ascending = Integer.parseInt(scanner.nextLine()) == 1;
+
+        Kunde kunde = controller.getKunde(id);
+
+        if (kunde == null) {
+            System.out.println("MAN KONNTE DEN KUNDEN NICHT FINDEN");
+            System.out.println("");
+            System.out.println("1. ZURUCK");
+            System.out.println("2. WIEDERVERSUCHEN");
+
+            String input = scanner.nextLine();
+
+            Integer inputInt = Integer.parseInt(input);
+
+            if (inputInt == 1)
+                ProduktePage();
+            if (inputInt == 2)
+                ProdukteNachKundePage();
+
+            // aici e important return, altfel va incerca sa continue
+            return;
+        }
+
+        List<Produkt> produkte = controller.produkteNachKunde(kunde, ascending);
+
+        produkte.stream()
+                .forEach((produkt)-> System.out.println( produkt.getName()) );
+
+        System.out.println("");
+        System.out.println("");
+        System.out.println("1. ZURUCK");
+        System.out.println("2. WIEDERVERSUCHEN");
+
+        scanner.reset();
+
+        Integer input = Integer.parseInt(scanner.nextLine());
+        if(input == 1)
+            ProduktePage();
+        else if(input==2)
+            ProdukteNachKundePage();
+    }
+
 
     public void KundenPage() {
         System.out.println("\n\n\n\n");
@@ -294,7 +353,9 @@ public class ConsoleView {
         System.out.println("3. UPDATE");
         System.out.println("4. DELETE");
         System.out.println("5. PRODUKTE EINKAUFEN");
-        System.out.println("6. ZURUCK");
+        System.out.println("6. FILTER NACH ORT");
+        System.out.println("7. FILTER NACH JAHRESZEIT");
+        System.out.println("8. ZURUCK");
 
         Scanner scanner = new Scanner(System.in);
 
@@ -311,6 +372,10 @@ public class ConsoleView {
         else if (input == 5)
             ProdukteEinkaufenPage();
         else if (input == 6)
+            FilterKundeNachOrtPage();
+        else if (input == 7)
+            KundeNachJahreszeitPage();
+        else if (input == 8)
             MainPage();
 
 
@@ -400,8 +465,7 @@ public class ConsoleView {
             KundenPage();
     }
 
-    void UpdateKundePage()
-    {
+    void UpdateKundePage() {
         System.out.println("\n\n\n\n");
         System.out.println("UPDATE KUNDE");
         System.out.println("");
@@ -447,7 +511,7 @@ public class ConsoleView {
         boolean output = controller.updateKunde(kunde, newName, newOrt);
 
         String outputString = "";
-        if(output == true)
+        if (output == true)
             outputString = "KUNDE ERFOLGREICH AKTUALISIERT!";
         else
             outputString = "MAN KONNTE DEN KUNDEN NICHT AKTUALISIEREN.";
@@ -463,8 +527,7 @@ public class ConsoleView {
             KundenPage();
     }
 
-    void RemoveKundePage()
-    {
+    void RemoveKundePage() {
         System.out.println("\n\n\n\n");
         System.out.println("KUNDE LOSCHEN");
         System.out.println("");
@@ -478,7 +541,7 @@ public class ConsoleView {
         boolean output = controller.removeKunde(id);
 
         String outputString = "";
-        if(output == true)
+        if (output == true)
             outputString = "KUNDE ERFOLGREICH GELOSCHT!";
         else
             outputString = "MAN KONNTE DEN KUNDEN NICHT LOSCHEN.";
@@ -497,8 +560,7 @@ public class ConsoleView {
             RemoveKundePage();
     }
 
-    void ProdukteEinkaufenPage()
-    {
+    void ProdukteEinkaufenPage() {
         System.out.println("\n\n\n\n");
         System.out.println("PRODUKTE EINKAUFEN");
         System.out.println("");
@@ -536,7 +598,7 @@ public class ConsoleView {
         System.out.println("");
         System.out.println("0. ZURUCK");
         // printeaza fiecare produs si indexul lui (+1) inainte
-        for(int i = 0; i < produkte.size(); i++)
+        for (int i = 0; i < produkte.size(); i++)
             System.out.println(i + 1 + ". " + produkte.get(i).getName());
 
         Integer input = Integer.parseInt(scanner.nextLine());
@@ -549,6 +611,68 @@ public class ConsoleView {
             controller.produktEinkaufen(kunde, produkte.get(input - 1));
             KundenPage();
         }
+    }
+
+    void FilterKundeNachOrtPage()
+    {
+        System.out.println("\n\n\n\n");
+        System.out.println("KUNDEN NACH ORT");
+        System.out.println("");
+        System.out.println("");
+        System.out.println("ORT: ");
+
+        Scanner scanner = new Scanner(System.in);
+
+        String ort = scanner.nextLine();
+
+        List<Kunde> kunden = controller.filterNachOrt(ort);
+
+        kunden.stream()
+                .forEach((kunde)-> System.out.println(kunde.getName()) );
+
+        System.out.println("");
+        System.out.println("");
+        System.out.println("1. ZURUCK");
+        System.out.println("2. WIEDERVERSUCHEN");
+
+        scanner.reset();
+
+        Integer input = Integer.parseInt(scanner.nextLine());
+        if(input == 1)
+            KundenPage();
+        else if(input==2)
+            FilterKundeNachOrtPage();
+    }
+
+    void KundeNachJahreszeitPage()
+    {
+        System.out.println("\n\n\n\n");
+        System.out.println("KUNDEN NACH JAHRESZEIT");
+        System.out.println("");
+        System.out.println("");
+        System.out.println("JAHRESZEIT: 1. WINTER 2. FRUHLING 3. SOMMER 4. HERBST: ");
+
+        Scanner scanner = new Scanner(System.in);
+
+        Integer jahreszeit = Integer.parseInt( scanner.nextLine() ) - 1 ;
+
+        List<Kunde> kunden = controller.kundeNachJahreszeit(jahreszeit);
+
+        kunden.stream()
+                .forEach((kunde)-> System.out.println(kunde.getName()) );
+
+        System.out.println("");
+        System.out.println("");
+        System.out.println("1. ZURUCK");
+        System.out.println("2. WIEDERVERSUCHEN");
+
+        scanner.reset();
+
+        Integer input = Integer.parseInt(scanner.nextLine());
+        if(input == 1)
+            KundenPage();
+        else if(input==2)
+            KundeNachJahreszeitPage();
     }
 
 }

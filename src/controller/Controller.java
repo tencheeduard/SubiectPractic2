@@ -5,6 +5,7 @@ import model.Produkt;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Controller {
 
@@ -204,5 +205,33 @@ public class Controller {
         if(!kunde.getProdukte().contains(produkt))
             return kunde.getProdukte().add(produkt);
         return false;
+    }
+
+
+    public List<Kunde> filterNachOrt(String ort)
+    {
+        return kunden.stream()
+                .filter( (kunde)->kunde.getOrt().equals( ort ) )
+                .toList();
+    }
+
+    public List<Kunde> kundeNachJahreszeit(Integer jahreszeit)
+    {
+        return kunden.stream()
+                .filter( (kunde)-> kunde.getProdukte().stream()
+                        .anyMatch( (produkt) -> produkt.getJahreszeit().equals(jahreszeit) ) )
+                .toList();
+    }
+
+    public List<Produkt> produkteNachKunde(Kunde kunde, boolean ascending)
+    {
+        if(ascending)
+            return kunde.getProdukte().stream()
+                    .sorted( (produkt1, produkt2) -> produkt1.getName().compareTo(produkt2.getName()) )
+                    .toList();
+
+        return kunde.getProdukte().stream()
+                .sorted( (produkt1, produkt2) -> produkt2.getName().compareTo(produkt1.getName()) )
+                .toList();
     }
 }
