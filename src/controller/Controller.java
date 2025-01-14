@@ -19,6 +19,11 @@ public class Controller {
      */
     List<Kunde> kunden = new ArrayList<>();
 
+    public List<Produkt> getProdukte()
+    {
+        return produkte;
+    }
+
 
     /**
      * Fugt ein Produkt in die Liste hinzu. Gibt zuruck true wenn das erfolgreich geschafft war, und false wenn nicht.
@@ -93,17 +98,18 @@ public class Controller {
     /**
      * Updates einen Produkt.
      */
-    public boolean updateProdukt(Produkt produkt, Produkt newProdukt)
+    public boolean updateProdukt(Produkt produkt, String newName, Integer newJahreszeit, Float newPreis)
     {
 
         if(produkt == null)
             return false;
 
-        produkt.setName( newProdukt.getName() );
+        if(!newName.isEmpty())
+            produkt.setName(newName);
 
-        produkt.setJahreszeit( newProdukt.getJahreszeit() );
+        produkt.setJahreszeit( newJahreszeit );
 
-        produkt.setPreis( newProdukt.getPreis() );
+        produkt.setPreis( newPreis );
 
         return true;
 
@@ -119,4 +125,84 @@ public class Controller {
         return produkte.remove(produkt);
     }
 
+    /**
+     * Fugt einen Kunde in die Liste hinzu. Gibt zuruck true wenn das erfolgreich geschafft war, und false wenn nicht.
+     */
+    public boolean addKunde(Kunde kunde)
+    {
+        if(kunden.stream().anyMatch( (k) -> k.getId().equals(kunde.getId())) )
+            return false;
+
+        return kunden.add(kunde);
+    }
+
+    /**
+     * Erstellt einen neuen Kunde und fugt es zu die Liste hinzu.
+     */
+
+    // uhhh practic vorbind nu cred ca as folosi metoda asta vreodata pentru ca pnm, poti apela oricand constructorul
+    // dar nu stiu daca ar depuncta pentru ca lipseste o parte din CRUD sau ceva.
+    // asa ca o pun just in case
+    public boolean createKunde(Integer id, String name, String ort)
+    {
+        Kunde kunde = new Kunde(id, name, ort, new ArrayList<>());
+
+        return addKunde(kunde);
+    }
+
+
+    public Kunde getKunde(Integer id)
+    {
+
+        for(Kunde kunde : kunden)
+            if(kunde.getId().equals(id))
+                return kunde;
+
+         return null;
+    }
+
+    /**
+     * Updates einen Kunde.
+     */
+    public boolean updateKunde(Kunde kunde, String newName, String newOrt)
+    {
+        if(kunde == null)
+            return false;
+
+        if(!newName.isEmpty())
+            kunde.setName(newName);
+
+        if(!newOrt.isEmpty())
+            kunde.setOrt(newOrt);
+
+
+        return true;
+    }
+
+
+    /**
+     * Loscht einen Kunde von Kundenliste.
+     * @return true zuruck wenn das erfolgreich war, und false wenn nicht.
+     */
+    public boolean removeKunde(Integer id) {
+        Kunde kunde = getKunde(id);
+
+        return kunden.remove(kunde);
+    }
+
+    /**
+     * Gibt zuruck den Anzahl der Kunden
+     * @return einen Integer, der gleich zu die Lange der Kundenliste ist.
+     */
+    public Integer getKundenAnzahl()
+    {
+        return kunden.size();
+    }
+
+    public boolean produktEinkaufen(Kunde kunde, Produkt produkt)
+    {
+        if(!kunde.getProdukte().contains(produkt))
+            return kunde.getProdukte().add(produkt);
+        return false;
+    }
 }
